@@ -8,12 +8,12 @@ import scala.xml.Elem
 
 case class Task(
   taskId: String,
-  taskType: TaskType,
+  //  taskType: TaskType,
   sender: String,
   recipients: List[String],
-  title: String,
-  description: String,
-  application: String //,
+  title: String //,
+  //  description: String,
+  //  application: String,
   //    createdOn: Date,
   //    dueDate: Date,
   //    expiryDate: Date,
@@ -29,12 +29,9 @@ object Task {
   implicit def toXml(task: Task): Elem = {
     <task>
       <taskId>{ task.taskId }</taskId>
-      { task.taskType.toXml }
       <sender>{ task.sender }</sender>
       { for (recipient <- task.recipients) yield <recipient>{ recipient }</recipient> }
       <title>{ task.title }</title>
-      <description>{ task.description }</description>
-      <application>{ task.application }</application>
     </task>
   }
 }
