@@ -7,14 +7,29 @@ This is a demo application to show the creation of a hypermedia api with the Pla
 
 ### API
 
-#### get request json
+#### create
+```bash
+curl --header "Content-type: application/json"  --request POST --data '{"taskId": "1", "title": "title", "sender": "sender", "recipients": ["a", "b"]}' http://localhost:9000/task
+```
+
+#### get json
 ```bash
 curl --header "Accept: application/json" --request GET http://localhost:9000/task/1 | python -mjson.tool
 ```
 
-#### get request xml
+#### get xml
 ```bash
 curl --header "Accept: application/xml" --request GET http://localhost:9000/task/1 | xmllint --format -
+```
+
+#### update
+```bash
+curl --header "Content-type: application/json"  --request PUT --data '{"taskId": "1", "title": "title", "sender": "sender", "recipients": ["a", "b"]}' http://localhost:9000/task
+```
+
+#### delete
+```bash
+curl --request DELETE http://localhost:9000/task/1
 ```
 
 ### Resources
