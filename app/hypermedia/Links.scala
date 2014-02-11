@@ -12,23 +12,23 @@ case class Links() {
   var _links: List[Link] = List()
 
   def addSelfLink(uri: String, mediaType: String) {
-    _links = Link(SELF, uri, mediaType) :: _links
+    add(Link(SELF, uri, mediaType))
   }
 
   def addGetLink(uri: String, mediaType: String) {
-    _links = Link(GET, uri, mediaType) :: _links
+    add(Link(GET, uri, mediaType))
   }
 
   def addCreateLink(uri: String, mediaType: String) {
-    _links = Link(CREATE, uri, mediaType) :: _links
+    add(Link(CREATE, uri, mediaType))
   }
 
   def addUpdateLink(uri: String, mediaType: String) {
-    _links = Link(UPDATE, uri, mediaType) :: _links
+    add(Link(UPDATE, uri, mediaType))
   }
 
   def addDeleteLink(uri: String, mediaType: String) {
-    _links = Link(DELETE, uri, mediaType) :: _links
+    add(Link(DELETE, uri, mediaType))
   }
 
   def add(link: Link) {
@@ -44,7 +44,7 @@ case class Links() {
       "_links" -> Json.toJson(_links))
   }
 
-  def addAsJsonTo[T](obj: T)(implicit anyWrites: Writes[T]): JsObject = {
+  def addAsJsonTo[T](obj: T)(implicit objWrites: Writes[T]): JsObject = {
     Json.toJson(obj).as[JsObject] ++ asJson
   }
 
