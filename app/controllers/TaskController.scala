@@ -11,22 +11,28 @@ import play.api.libs.json.JsObject
 import hypermedia.Links
 import play.api.libs.json.JsError
 import play.api.Logger
+import hypermedia.Links
+import hypermedia.LinkBuilder
 
 object TaskController extends Controller {
+
   def findById(id: String) = Action {
     implicit req =>
-      Logger.debug("FIND")
+      Logger.debug("findById")
       val task: Task = Task("12345", "sender", "recipientA" :: "recipientB" :: Nil, "title")
 
       render {
         case Accepts.Json() => {
-          val links = Links()
-          links.addUpdateLink(routes.TaskController.update.toString, "application/json");
+          //          val links = Links()
+          //          links.addUpdateLink(routes.TaskController.update.toString, "application/json");
+          //
+          //          links.add(linkTo(routes.TaskController.findById(task.taskId)).withSelfRel.withJsonMediaType)
+          //          links.add(linkTo(routes.TaskController.delete(task.taskId)).withDeleteRel.withJsonMediaType)
+          //
+          //          Ok(links.addAsJsonTo(task)).as(JSON)
 
-          links.add(linkTo(routes.TaskController.findById(task.taskId)).withSelfRel.withJsonMediaType)
-          links.add(linkTo(routes.TaskController.delete(task.taskId)).withDeleteRel.withJsonMediaType)
-
-          Ok(links.addAsJsonTo(task)).as(JSON)
+          Logger.debug(JSON)
+          Ok(Links.generateAsJson(task, createDefaultTaskLinksAsJson _)).as(JSON)
         }
         case Accepts.Xml() => {
           val links = Links()
@@ -34,6 +40,33 @@ object TaskController extends Controller {
           links.add(linkTo(routes.TaskController.findById(task.taskId)).withSelfRel.withXmlMediaType)
 
           Ok(links.addAsXmlTo(task)).as(XML)
+        }
+        case _ => NotAcceptable
+      }
+  }
+
+  private def createDefaultTaskLinksAsJson(task: Task): Links = {
+    val links = Links()
+    links.addUpdateLink(routes.TaskController.update.toString, "application/json");
+
+    links.add(linkTo(routes.TaskController.findById(task.taskId)).withSelfRel.withJsonMediaType)
+    links.add(linkTo(routes.TaskController.delete(task.taskId)).withDeleteRel.withJsonMediaType)
+
+    links
+  }
+
+  def findAll() = Action {
+    implicit req =>
+      Logger.debug("findAll")
+
+      val task1: Task = Task("12345", "sender1", "recipientA" :: "recipientB" :: Nil, "title1")
+      val task2: Task = Task("12346", "sender2", "recipientC" :: "recipientB" :: Nil, "title2")
+
+      val taskList = task1 :: task2 :: Nil
+
+      render {
+        case Accepts.Json() => {
+          Ok(Links.generateAsJson(taskList, createDefaultTaskLinksAsJson _)).as(JSON)
         }
         case _ => NotAcceptable
       }
@@ -80,4 +113,5 @@ object TaskController extends Controller {
       e => BadRequest("Detected error:" + JsError.toFlatJson(e))
     }
   }
+
 }

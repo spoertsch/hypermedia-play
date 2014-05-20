@@ -12,9 +12,102 @@ This is a demo application to show the creation of a hypermedia api with the Pla
 curl --header "Content-type: application/json"  --request POST --data '{"taskId": "1", "title": "title", "sender": "sender", "recipients": ["a", "b"]}' http://localhost:9000/task
 ```
 
+#### get json: /tasks
+```bash
+curl --header "Accept: application/json" --request GET http://localhost:9000/tasks | python -mjson.tool
+```
+
+```json
+{
+    "collection": [
+        {
+            "_links": [
+                {
+                    "mediaType": "application/json",
+                    "rel": "delete",
+                    "uri": "/task/12345"
+                },
+                {
+                    "mediaType": "application/json",
+                    "rel": "self",
+                    "uri": "/task/12345"
+                },
+                {
+                    "mediaType": "application/json",
+                    "rel": "update",
+                    "uri": "/task"
+                }
+            ],
+            "recipients": [
+                "recipientA",
+                "recipientB"
+            ],
+            "sender": "sender1",
+            "taskId": "12345",
+            "title": "title1"
+        },
+        {
+            "_links": [
+                {
+                    "mediaType": "application/json",
+                    "rel": "delete",
+                    "uri": "/task/12346"
+                },
+                {
+                    "mediaType": "application/json",
+                    "rel": "self",
+                    "uri": "/task/12346"
+                },
+                {
+                    "mediaType": "application/json",
+                    "rel": "update",
+                    "uri": "/task"
+                }
+            ],
+            "recipients": [
+                "recipientC",
+                "recipientB"
+            ],
+            "sender": "sender2",
+            "taskId": "12346",
+            "title": "title2"
+        }
+    ]
+}
+```
+
 #### get json: /task/:id
 ```bash
 curl --header "Accept: application/json" --request GET http://localhost:9000/task/1 | python -mjson.tool
+```
+
+```json
+{
+    "_links": [
+        {
+            "mediaType": "application/json",
+            "rel": "delete",
+            "uri": "/task/12345"
+        },
+        {
+            "mediaType": "application/json",
+            "rel": "self",
+            "uri": "/task/12345"
+        },
+        {
+            "mediaType": "application/json",
+            "rel": "update",
+            "uri": "/task"
+        }
+    ],
+    "recipients": [
+        "recipientA",
+        "recipientB"
+    ],
+    "sender": "sender",
+    "taskId": "12345",
+    "title": "title"
+}
 ```
 
 #### get xml: /task/:id

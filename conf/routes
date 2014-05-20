@@ -11,5 +11,7 @@ PUT      /task           controllers.TaskController.update()
 POST     /task           controllers.TaskController.create()
 DELETE   /task/:id       controllers.TaskController.delete(id: String)
 
+GET		/tasks			 controllers.TaskController.findAll()
+
 # Map static resources from the /public folder to the /assets URL path
 GET      /assets/*file   controllers.Assets.at(path="/public", file)

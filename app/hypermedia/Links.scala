@@ -58,5 +58,23 @@ case class Links() {
   def addAsXmlTo[T](obj: T)(implicit objToXml: T => Elem): Elem = {
     <result>{ objToXml(obj) ++ asXml }</result>
   }
+
+  def addAsXmlTo[T](list: Seq[T])(implicit objToXml: T => Elem): Elem = {
+    <result>{
+      list.map(objToXml(_) ++ asXml)
+    }</result>
+  }
+
+}
+
+object Links {
+
+  def generateAsJson[T](obj: T, linkGen: T => Links)(implicit objWrites: Writes[T]): JsObject = {
+    Json.toJson(obj).as[JsObject] ++ linkGen(obj).asJson
+  }
+
+  def generateAsJson[T](list: Seq[T], linkGen: T => Links)(implicit objWrites: Writes[T]): JsObject = {
+    JsObject(Seq("collection" -> Json.toJson(list.map(t => Json.toJson(t).as[JsObject] ++ linkGen(t).asJson))))
+  }
 }
 

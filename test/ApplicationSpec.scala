@@ -12,7 +12,7 @@ import play.api.test.Helpers._
  */
 @RunWith(classOf[JUnitRunner])
 class ApplicationSpec extends Specification {
-
+  
   "Application" should {
 
     "send 404 on a bad request" in new WithApplication{
