@@ -2,8 +2,9 @@ hypermedia-play
 =====================================
 
 This is a demo application to show the creation of a hypermedia api with the Play Framework.
+The goal is to add hypermedia support to a play application without having to add any link constraints or information to the domain model / entity.
 
-**This is currently work in progress!**
+**This is currently work in progress! Help, ideas and comments are welcome!**
 
 ### API
 
