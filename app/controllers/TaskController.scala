@@ -18,21 +18,18 @@ object TaskController extends Controller {
 
   def findById(id: String) = Action {
     implicit req =>
-      Logger.debug("findById")
-      val task: Task = Task("12345", "sender", "recipientA" :: "recipientB" :: Nil, "title")
+      val task = Task.findById(id)
 
       render {
         case Accepts.Json() => {
-          //          val links = Links()
-          //          links.addUpdateLink(routes.TaskController.update.toString, "application/json");
-          //
-          //          links.add(linkTo(routes.TaskController.findById(task.taskId)).withSelfRel.withJsonMediaType)
-          //          links.add(linkTo(routes.TaskController.delete(task.taskId)).withDeleteRel.withJsonMediaType)
-          //
-          //          Ok(links.addAsJsonTo(task)).as(JSON)
+          val links = Links()
+          links.addUpdateLink(routes.TaskController.update.toString, "application/json");
 
-          Logger.debug(JSON)
-          Ok(Links.generateAsJson(task, createDefaultTaskLinksAsJson _)).as(JSON)
+          links.add(linkTo(routes.TaskController.findById(task.taskId)).withSelfRel.withJsonMediaType)
+          links.add(linkTo(routes.TaskController.delete(task.taskId)).withDeleteRel.withJsonMediaType)
+
+          Ok(links.addAsJsonTo(task)).as(JSON)
+          //          Ok(Links.generateAsJson(task, createDefaultTaskLinksAsJson _)).as(JSON)
         }
         case Accepts.Xml() => {
           val links = Links()
@@ -45,7 +42,17 @@ object TaskController extends Controller {
       }
   }
 
-  private def createDefaultTaskLinksAsJson(task: Task): Links = {
+  private def generateDefaultTaskLinksAsJson(task: Task): Links = {
+    val links = Links()
+    links.addUpdateLink(routes.TaskController.update.toString, "application/json");
+
+    links.add(linkTo(routes.TaskController.findById(task.taskId)).withSelfRel.withJsonMediaType)
+    links.add(linkTo(routes.TaskController.delete(task.taskId)).withDeleteRel.withJsonMediaType)
+
+    links
+  }
+
+  implicit def generateDefaultTaskLinksAsJsonImplicit(task: Task): Links = {
     val links = Links()
     links.addUpdateLink(routes.TaskController.update.toString, "application/json");
 
@@ -57,16 +64,11 @@ object TaskController extends Controller {
 
   def findAll() = Action {
     implicit req =>
-      Logger.debug("findAll")
-
-      val task1: Task = Task("12345", "sender1", "recipientA" :: "recipientB" :: Nil, "title1")
-      val task2: Task = Task("12346", "sender2", "recipientC" :: "recipientB" :: Nil, "title2")
-
-      val taskList = task1 :: task2 :: Nil
+      val taskList = Task.findAll
 
       render {
         case Accepts.Json() => {
-          Ok(Links.generateAsJson(taskList, createDefaultTaskLinksAsJson _)).as(JSON)
+          Ok(Links.generateAsJsonImplicit(taskList)).as(JSON)
         }
         case _ => NotAcceptable
       }
@@ -75,13 +77,11 @@ object TaskController extends Controller {
   def delete(id: String) = Action {
     implicit req =>
       {
-        Logger.debug("DELETE")
-        Ok
+        NoContent
       }
   }
 
   def update() = Action(parse.json) { implicit request =>
-    Logger.debug("UPDATE")
     request.body.validate[Task].map {
       case task => {
         val links = Links()
@@ -98,7 +98,6 @@ object TaskController extends Controller {
   }
 
   def create() = Action(parse.json) { implicit request =>
-    Logger.debug("CREATE")
     request.body.validate[Task].map {
       case task => {
         val links = Links()
@@ -108,6 +107,8 @@ object TaskController extends Controller {
         links.add(linkTo(routes.TaskController.delete(task.taskId)).withDeleteRel.withJsonMediaType)
 
         Ok(links.addAsJsonTo(task)).as(JSON)
+        //        Created.withHeaders(
+        //          "Location" -> routes.TaskController.findById(task.id).absoluteURL())
       }
     }.recoverTotal {
       e => BadRequest("Detected error:" + JsError.toFlatJson(e))

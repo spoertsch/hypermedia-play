@@ -34,5 +34,18 @@ object Task {
       <title>{ task.title }</title>
     </task>
   }
+
+  // Dummy
+  def findAll() : Seq[Task] = {
+    val task1: Task = Task("12345", "sender1", "recipientA" :: "recipientB" :: Nil, "title1")
+    val task2: Task = Task("12346", "sender2", "recipientC" :: "recipientB" :: Nil, "title2")
+
+    task1 :: task2 :: Nil
+  }
+  
+  // Dummy
+  def findById(id: String) : Task = {
+    Task("12345", "sender", "recipientA" :: "recipientB" :: Nil, "title")
+  }
 }
 
