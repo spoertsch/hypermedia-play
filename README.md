@@ -61,6 +61,34 @@ A different possibility is to create a generator function that creates the link 
   }
 ```
 
+#### Implicit generator function
+This is the same approach as above but using an implicit generator function.
+
+```scala
+
+  implicit def generateTaskLinks(task: Task): Links = {
+    val links = Links()
+    links.addUpdateLink(routes.TaskController.update.toString, "application/json");
+
+    links.add(linkTo(routes.TaskController.findById(task.taskId)).withSelfRel.withJsonMediaType)
+    links.add(linkTo(routes.TaskController.delete(task.taskId)).withDeleteRel.withJsonMediaType)
+
+    links
+  }
+
+  def findAll() = Action {
+    implicit req =>
+      val taskList = Tasks.findAll
+
+      render {
+        case Accepts.Json() => {
+          Ok(Links.generateAsJsonImplicit(taskList)).as(JSON)
+        }
+        case _ => NotAcceptable
+      }
+  }
+```
+
 ### Sample API
 
 #### create: /task
