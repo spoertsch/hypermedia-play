@@ -1,12 +1,67 @@
 hypermedia-play
 =====================================
 
-This is a demo application to show the creation of a hypermedia api with the Play Framework.
+This is a proof of concept application to show the creation of a hypermedia api with the Play Framework.
 The goal is to add hypermedia support to a play application without having to add any link constraints or information to the domain model / entity.
 
 **This is currently work in progress! Help, ideas and comments are welcome!**
 
-### API
+### How to use
+There is no need to add any link specific information to your domain model. Only implicit (json) reads and writes need to be available.
+The links will only be added to the object returned by the action by manipulating the json response.
+
+#### Add links directly
+It is possible to create the links manually as needed and add them to the returned object.
+
+```scala
+  def findById(id: String) = Action {
+    implicit req =>
+      val task: Task = Tasks.findById(id)
+
+      render {
+        case Accepts.Json() => {
+          val links = Links()
+          links.addUpdateLink(routes.TaskController.update.toString, "application/json");
+          
+          links.add(linkTo(routes.TaskController.findById(task.taskId)).withSelfRel.withJsonMediaType)
+          links.add(linkTo(routes.TaskController.delete(task.taskId)).withDeleteRel.withJsonMediaType)
+
+          Ok(links.addAsJsonTo(task)).as(JSON)
+        }
+        case _ => NotAcceptable
+      }
+  }
+```
+
+#### Add links with generator function
+A different possibility is to create a generator function that creates the link for a specific object. The links will then be created for that object by using this generator function.
+
+```scala
+
+  private def generateTaskLinks(task: Task): Links = {
+    val links = Links()
+    links.addUpdateLink(routes.TaskController.update.toString, "application/json");
+
+    links.add(linkTo(routes.TaskController.findById(task.taskId)).withSelfRel.withJsonMediaType)
+    links.add(linkTo(routes.TaskController.delete(task.taskId)).withDeleteRel.withJsonMediaType)
+
+    links
+  }
+
+  def findAll() = Action {
+    implicit req =>
+      val taskList = Tasks.findAll
+
+      render {
+        case Accepts.Json() => {
+          Ok(Links.generateAsJson(taskList, generateTaskLinks _)).as(JSON)
+        }
+        case _ => NotAcceptable
+      }
+  }
+```
+
+### Sample API
 
 #### create: /task
 ```bash
